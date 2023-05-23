@@ -7,7 +7,7 @@ The algorithm is developed and tested using Matlab® 2019b with the *Eidors* too
 - a demonstration voltage measurement of the fully ventilated lungs
 - a structural prior
 
-If you use the DCT-based algorithm or our dataset (fully or partially), you must cite the following publications:
+If you use the DCT-based algorithm or our dataset (fully or partially), you must cite the following publication:
 - Chen R, Krueger-Ziolek S, Lovas A, Benyó B, Rupitsch SJ, Moeller K (2023) Structural priors represented by discrete cosine transform improve EIT functional imaging. PLoS ONE 18(5): e0285619. 10.1371/journal.pone.0285619
 
 In addition, as *Eidors* toolbox and *Netgen* are used in our algorithm, you must also cite the following publications:
