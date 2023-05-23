@@ -14,9 +14,6 @@ In addition, as *Eidors* toolbox and *Netgen* are used in our algorithm, you mus
 - A. Adler and W. R. Lionheart, ‘Uses and abuses of EIDORS: An extensible software base for EIT’, Physiol. Meas., vol. 27, no. 5, p. S25, 2006. doi: 10.1088/0967-3334/27/5/S03
 - J. Schöberl, ‘NETGEN An advancing front 2D/3D-Mesh generator based on abstract rules’, Comput. Vis. Sci., vol. 1, no. 1, pp. 41–52, 1997. doi: 10.1007/s007910050004
 
-
-Copyright 2019 Province of British Columbia
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
