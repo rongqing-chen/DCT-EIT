@@ -23,7 +23,7 @@
 
 function imgRec = inv_solve_DCT(imdl, deltaVolt, specMtxCol, lambda)
 
-%% creating an inverse model for EIT
+% creating an inverse model for EIT
 
 imgRec = mk_image(imdl,1);
 
