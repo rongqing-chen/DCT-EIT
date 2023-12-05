@@ -24,6 +24,7 @@ load('dct_demonstration.mat')
 % the prior
 [dct_p, dct_q] = create_dct_subset(size(prior_l,1),size(prior_l,2));
 
+
 % calculating the T mapping
 specMtxCol = cal_mapping(dct_p, dct_q, fmdl, prior_l);
 

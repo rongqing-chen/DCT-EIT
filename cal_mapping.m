@@ -32,6 +32,8 @@ fmdlStretch.nodes = fmdl.nodes * 120 + 256/2;
 pts = interp_mesh(fmdlStretch, 0);
 
 img = mk_image(fmdl,1);
+transferFunc = zeros(length(pts),2);
+
 
 for i=1:size(pts,1)
     imageValue = prior_l(round(pts(i,2)),round(pts(i,1)));
