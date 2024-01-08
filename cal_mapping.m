@@ -25,29 +25,32 @@ function specMtxCol = cal_mapping(dct_p, dct_q, fmdl, prior_l)
 % preparing the prior information
 prior = flipud(prior_l);
 
-% calculating the interpolation points onto mdl elements
-
+% recenter and stretch the model to 256x256
 fmdlStretch = fmdl;
 fmdlStretch.nodes = fmdl.nodes * 120 + 256/2;
 pts = interp_mesh(fmdlStretch, 0);
 
-img = mk_image(fmdl,1);
-transferFunc = zeros(length(pts),2);
+% img = mk_image(fmdl,1);
+% transferFunc = zeros(length(pts),2);
 
+round_pts = round(pts);
+% image_values = prior_l(round_pts);
+% img.elem_data = 1 - 0.8*image_values;
+transfer_function = sub2ind(size(prior), round_pts(:,2), round_pts(:,1));
 
-for i=1:size(pts,1)
-    imageValue = prior_l(round(pts(i,2)),round(pts(i,1)));
-    % mind that the relationship between attenuation and the conductivity! 
-    img.elem_data(i) = 1 - 0.8*imageValue;
-    transferFunc(i,:) = [i,sub2ind(size(prior),round(pts(i,2)),round(pts(i,1)))];
-end
+% for i=1:size(pts,1)
+%     imageValue = prior_l(round(pts(i,2)),round(pts(i,1)));
+%     % mind that the relationship between attenuation and the conductivity! 
+%     img.elem_data(i) = 1 - 0.8*imageValue;
+%     transferFunc(i,:) = [i,sub2ind(size(prior),round(pts(i,2)),round(pts(i,1)))];
+% end
 
 % get the dimension at the x-axis and y-axis
 dimX = sqrt(length(dct_p));
 dimY = sqrt(length(dct_q));
 
 specMtx = zeros(size(prior_l,1),size(prior_l,2),dimX*dimY);
-specMtxCol = zeros(size(transferFunc,1),dimX*dimY);
+specMtxCol = zeros(size(transfer_function,1),dimX*dimY);
 
 % setting an index for the T mapping
 
@@ -58,7 +61,8 @@ for i=1:dimX
         index = index + 1;
         specMtx(:,:,index) = dct_p(i,:)'*dct_q(j,:) .* prior_l;
         tempMtx = specMtx(:,:,index);
-        tempIdx = ind2sub(size(prior),transferFunc(:,2));
+%         tempIdx = ind2sub(size(prior),transferFunc(:,2));
+        tempIdx = ind2sub(size(prior),transfer_function);
         specMtxCol(:,index) = tempMtx(tempIdx);
     end
 end
