@@ -16,8 +16,12 @@
 % Date: 13-Oct-2021
 %
 % Script overview: This is a demonstration on how to use DCT-based EIT
-% algorithm. EIDORS tool bos should be set up before using this code.
+% algorithm. 
 
+% Set up EIDORS tool (run path_to/eidors-vx.yy/eidors/startup.m)
+init_eidors()
+
+% 
 load('dct_demonstration.mat')
 
 % calculating the DCT subset with frequencies combination, which is the size to
