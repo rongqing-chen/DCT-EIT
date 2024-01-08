@@ -33,7 +33,7 @@ load('dct_demonstration.mat')
 specMtxCol = cal_mapping(dct_p, dct_q, fmdl, prior_l);
 
 % check if the columns of specMtxCol are linearly independent
-A = rref(specMtxCol);
+A = rref(specMtxCol); % not sure this is correct?!?
 s = sum(diag(A));
 n = size(A,2);
 
@@ -47,4 +47,5 @@ end
 imgRec = inv_solve_DCT(imdl, deltaVolt, specMtxCol, lambda);
 
 % display the image
+figure(1)
 show_fem(imgRec);
