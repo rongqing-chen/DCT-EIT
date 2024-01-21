@@ -25,23 +25,32 @@ dct_q(1,:) = dct_q(1,:) / sqrt(2);
 
 
 %% my dct
-% scale dimensions 
-fmdlStretch = fmdl;
-fmdlStretch.nodes = fmdl.nodes * 120 + 256/2;
-elem_centers = interp_mesh(fmdlStretch, 0); % center of elements
-mins = min(elem_centers);
-maxs = max(elem_centers);
 
 % number of coefficients
 M = 16;
 N = 16;
-norm_centers = (elem_centers - mins)./(maxs - mins);
 
-orig_mins = [8, 38.72];
-orig_maxs = [248, 217.28];
-strecthed_centers = norm_centers.*(orig_maxs-orig_mins) + orig_mins;
-new_centers(:,1) = pi*(2*strecthed_centers(:,1)+1)/(2*256);
-new_centers(:,2) = pi*(2*strecthed_centers(:,2)+1)/(2*256);
+% scale and shift model
+magic_values(1,:) = [8, 38.72]; % orig_mins
+magic_values(2,:) = [248, 217.28]; % orig_maxs;
+magic_values(3,:) = [120 , 256/2]; % stretch and shift
+[fmdlStretch, new_centers] = scale_model_dimension(fmdl, magic_values);
+
+
+% % scale dimensions 
+% fmdlStretch = fmdl;
+% fmdlStretch.nodes = fmdl.nodes * 120 + 256/2;
+% elem_centers = interp_mesh(fmdlStretch, 0); % center of elements
+% mins = min(elem_centers);
+% maxs = max(elem_centers);
+% 
+% norm_centers = (elem_centers - mins)./(maxs - mins);
+% 
+% orig_mins = [8, 38.72];
+% orig_maxs = [248, 217.28];
+% strecthed_centers = norm_centers.*(orig_maxs-orig_mins) + orig_mins;
+% new_centers(:,1) = pi*(2*strecthed_centers(:,1)+1)/(2*256);
+% new_centers(:,2) = pi*(2*strecthed_centers(:,2)+1)/(2*256);
 
 values = zeros(length(new_centers), M*N);
 
