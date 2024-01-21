@@ -4,7 +4,8 @@ function ordered_coeffs = order_coeffs_tensor_product(coeffs_dir_1, coeffs_dir_2
 
 
 [MM, NN] = ndgrid(coeffs_dir_1, coeffs_dir_2);
+MM = MM(:);
+NN = NN(:);
+ordered_coeffs = [zigzag_matrix(MM), zigzag_matrix(NN)];
 
-ordered_coeffs = [zigzag_matrix(MM)', zigzag_matrix(NN)'];
-
-% end
+end
