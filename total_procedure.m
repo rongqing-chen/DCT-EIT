@@ -4,7 +4,7 @@
 % 
 load('dct_demonstration.mat')
 
-prior_l = ones(size(prior_l));
+% prior_l = ones(size(prior_l));
 
 %%
 % calculating the DCT subset with frequencies combination, which is the size to
@@ -103,8 +103,8 @@ subplot(2,1,1)
 show_fem(imgRec)
 
 subplot(2,1,2)
-contourf(prior_l)
-axis equal
+imagesc(flipud(prior_l))
+% axis equal
 
 %%
 % calculating the DCT subset with frequencies combination, which is the size to
@@ -212,7 +212,7 @@ my_imgRec.elem_data = my_recCond;
 
 %%
 % display the image
-figure(1)
+figure(2)
 clf
 subplot(2,1,1)
 show_fem(imgRec);
@@ -225,7 +225,7 @@ S_J = svd(J);
 S_dct = svd(J*spec_Mtx_col);
 S_val = svd(J*values); 
 
-figure(2)
+figure(3)
 clf
 hold on
 loglog(S_J./S_J(1))
