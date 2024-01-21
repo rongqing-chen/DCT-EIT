@@ -33,8 +33,8 @@ mins = min(elem_centers);
 maxs = max(elem_centers);
 
 % number of coefficients
-M = 10;
-N = 10;
+M = 16;
+N = 16;
 norm_centers = (elem_centers - mins)./(maxs - mins);
 
 orig_mins = [8, 38.72];
@@ -45,19 +45,38 @@ new_centers(:,2) = pi*(2*strecthed_centers(:,2)+1)/(2*256);
 
 values = zeros(length(new_centers), M*N);
 
+
+
 % what happens if I zig zag the coeff matrix to create the transform
 % matrix? Does it improve?
 
-% no normalization
-idx = 0;
-for jj = 0:M-1
-    for kk = 0:N-1
-        idx = idx+1;
-        a_jk = [jj,kk];
-        values(:,idx) = 2/(M*N)*cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1)); % coeffs 1 should have an extra normalization
-%         values(:,idx) = cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1)); % this makes for very bad results, why?
+% idx = 0;
+% for jj = 0:M-1
+%     for kk = 0:N-1
+%         idx = idx+1;
+%         a_jk = [jj,kk];
+%         normalization = 2/(M*N);
+%         if any(a_jk == 0)
+%             normalization = normalization/sqrt(2);
+%         end
+%         values(:,idx) = normalization*cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1)); % coeffs 1 should have an extra normalization
+% %         values(:,idx) = cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1)); % this makes for very bad results, why?
+%     end
+% end
+
+ordered_coefficients = order_coeffs_tensor_product(0:M-1, 0:N-1);
+for idk = 1:length(ordered_coefficients)
+    a_jk = ordered_coefficients(idk,:);
+    normalization = 2/(M*N);
+    if a_jk(1) == 0
+        normalization = normalization/sqrt(2);
     end
+    if a_jk(2) == 0
+        normalization = normalization/sqrt(2);
+    end
+    values(:,idk) = normalization*cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1));
 end
+
 
 %% mask
 pts = interp_mesh(fmdlStretch, 0);
@@ -200,3 +219,19 @@ show_fem(imgRec);
 
 subplot(2,1,2)
 show_fem(my_imgRec);
+
+%% compare singular values
+S_J = svd(J);
+S_dct = svd(J*spec_Mtx_col);
+S_val = svd(J*values); 
+
+figure(2)
+clf
+hold on
+loglog(S_J./S_J(1))
+loglog(S_dct./S_dct(1))
+loglog(S_val./S_val(1))
+
+set(gca, 'xscale', 'lin',  'yscale', 'log')
+
+legend('J', 'dct', 'my dct')
