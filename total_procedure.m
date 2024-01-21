@@ -1,6 +1,6 @@
 
 % init_eidors()
-
+clear
 % 
 load('dct_demonstration.mat')
 
@@ -24,36 +24,25 @@ dct_q = sqrt(2 / Y_Pix) * cos(pi * (2*pp + 1) .* qq / (2 * Y_Pix));
 dct_q(1,:) = dct_q(1,:) / sqrt(2);
 
 
-%% my dct
-
-% number of coefficients
-M = 16;
-N = 16;
+%% scale model
 
 % scale and shift model
 magic_values(1,:) = [8, 38.72]; % orig_mins
 magic_values(2,:) = [248, 217.28]; % orig_maxs;
 magic_values(3,:) = [120 , 256/2]; % stretch and shift
-[fmdlStretch, new_centers] = scale_model_dimension(fmdl, magic_values);
+[fmdl_stretch, new_centers] = scale_model_dimension(fmdl, magic_values);
 
-values = zeros(length(new_centers), M*N);
+%% my dct
+% number of coefficients
+M = 16;
+N = 16;
 
-ordered_coefficients = order_coeffs_tensor_product(0:M-1, 0:N-1);
-for idk = 1:length(ordered_coefficients)
-    a_jk = ordered_coefficients(idk,:);
-    normalization = 2/(M*N);
-    if a_jk(1) == 0
-        normalization = normalization/sqrt(2);
-    end
-    if a_jk(2) == 0
-        normalization = normalization/sqrt(2);
-    end
-    values(:,idk) = normalization*cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1));
-end
+
+[S, ordered_coefficients] = make_DCT_subset(new_centers, M, N);
 
 
 %% mask
-pts = interp_mesh(fmdlStretch, 0);
+pts = interp_mesh(fmdl_stretch, 0);
 
 x = 0:255;
 y = x';
@@ -64,7 +53,7 @@ mask_interp = griddedInterpolant({x,y}, prior_l, 'nearest');
 unstruct_maks = mask_interp([pts(:,2), pts(:,1)]);
 
 %
-masked_values = unstruct_maks.*values;
+masked_values = unstruct_maks.*S;
 
 
 % check OK
@@ -91,9 +80,9 @@ imagesc(flipud(prior_l))
 prior = flipud(prior_l);
 
 % recenter and stretch the model to 256x256
-fmdlStretch = fmdl;
-fmdlStretch.nodes = fmdl.nodes * 120 + 256/2;
-pts = interp_mesh(fmdlStretch, 0); % center of elements
+fmdl_stretch = fmdl;
+fmdl_stretch.nodes = fmdl.nodes * 120 + 256/2;
+pts = interp_mesh(fmdl_stretch, 0); % center of elements
 round_pts = round(pts);
 
 %
@@ -188,7 +177,7 @@ show_fem(my_imgRec);
 %% compare singular values
 S_J = svd(J);
 S_dct = svd(J*spec_Mtx_col);
-S_val = svd(J*values); 
+S_val = svd(J*S); 
 
 figure(3)
 clf
