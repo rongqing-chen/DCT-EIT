@@ -45,25 +45,6 @@ new_centers(:,2) = pi*(2*strecthed_centers(:,2)+1)/(2*256);
 
 values = zeros(length(new_centers), M*N);
 
-
-
-% what happens if I zig zag the coeff matrix to create the transform
-% matrix? Does it improve?
-
-% idx = 0;
-% for jj = 0:M-1
-%     for kk = 0:N-1
-%         idx = idx+1;
-%         a_jk = [jj,kk];
-%         normalization = 2/(M*N);
-%         if any(a_jk == 0)
-%             normalization = normalization/sqrt(2);
-%         end
-%         values(:,idx) = normalization*cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1)); % coeffs 1 should have an extra normalization
-% %         values(:,idx) = cos(a_jk(1)*new_centers(:,2)).*cos(a_jk(2)*new_centers(:,1)); % this makes for very bad results, why?
-%     end
-% end
-
 ordered_coefficients = order_coeffs_tensor_product(0:M-1, 0:N-1);
 for idk = 1:length(ordered_coefficients)
     a_jk = ordered_coefficients(idk,:);
@@ -153,16 +134,7 @@ spec_Mtx_col = masked_spec_Mtx(temp_idx, :);
 
 %%
 specMtxCol = spec_Mtx_col;
-% % check if the columns of specMtxCol are linearly independent
-% A = rref(specMtxCol); % not sure this is correct?!?
-% s = sum(diag(A));
-% n = size(A,2);
-% 
-% if n>s
-%     disp('vectors are linearly dependent')
-% else
-%     disp('vectors are linearly independent')
-% end
+
 
 
 %%
