@@ -82,6 +82,7 @@ subplot(2,1,2)
 show_fem(my_imgRec);
 
 %% compare singular values
+% I am not sure about this part
 imgRec_ = mk_image(imdl,1);
 
 % calc the Jacobian
