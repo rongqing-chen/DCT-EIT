@@ -1,4 +1,4 @@
-function [DCT_subset, coefficients_matrix] = make_DCT_subset(elem_centers, coefficients_matrix)
+function DCT_subset = make_DCT_subset(elem_centers, coefficients_matrix)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
