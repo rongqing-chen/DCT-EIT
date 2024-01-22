@@ -44,18 +44,6 @@ N = 16;
 
 unstruct_maks = make_unstructured_mask(fmdl_stretch, prior_l);
 
-% pts = interp_mesh(fmdl_stretch, 0);
-% 
-% [x_dim, y_dim] = size(prior_l);
-% x = 0:x_dim-1;
-% y = (0:y_dim-1)';
-% 
-% mask_interp = griddedInterpolant({x,y}, prior_l, 'nearest');
-% 
-% % dimensions need inversion
-% unstruct_maks = mask_interp([pts(:,2), pts(:,1)]);
-
-%
 masked_values = unstruct_maks.*S;
 
 
