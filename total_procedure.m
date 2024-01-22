@@ -32,7 +32,18 @@ N = 16;
 % order coefficients in zig zag way
 coefficients_matrix = order_coeffs_tensor_product(0:M-1, 0:N-1);
 
-[S, ordered_coefficients] = make_DCT_subset(new_centers, coefficients_matrix);
+S_my_dct = make_DCT_subset(new_centers, coefficients_matrix);
+
+
+%% polynomial subset
+% number of coefficients
+M = 16;
+N = M;
+coefficients_matrix = order_coeffs_tensor_product(0:M-1, 0:N-1);
+[norm_centers] = (2*recenter_model(fmdl))-1;
+S_lege = make_legendre_subset(norm_centers, coefficients_matrix);
+S_cheb = make_chebyshev_subset(norm_centers, coefficients_matrix);
+
 
 
 %% mask
@@ -40,17 +51,19 @@ coefficients_matrix = order_coeffs_tensor_product(0:M-1, 0:N-1);
 unstruct_maks = make_unstructured_mask(fmdl_stretch, prior_l);
 
 % apply mask on subset
-masked_values = unstruct_maks.*S;
+masked_my_dct = unstruct_maks.*S_my_dct;
+masked_lege = unstruct_maks.*S_lege;
+masked_cheb = unstruct_maks.*S_cheb;
 
 
 % check OK
-my_imgRec = mk_image(imdl,1);
-my_imgRec.elem_data = unstruct_maks;
+imgRec_my_dct = mk_image(imdl,1);
+imgRec_my_dct.elem_data = unstruct_maks;
 
 figure(1)
 clf
 subplot(2,1,1)
-show_fem(my_imgRec)
+show_fem(imgRec_my_dct)
 
 subplot(2,1,2)
 imagesc(flipud(prior_l))
@@ -68,18 +81,26 @@ imgRec = inv_solve_DCT(imdl, deltaVolt, spec_Mtx_col, lambda);
 
 
 %% my version
-my_imgRec = inv_solve_DCT(imdl, deltaVolt, masked_values, lambda);
+imgRec_my_dct = inv_solve_DCT(imdl, deltaVolt, masked_my_dct, lambda);
+imgRec_lege = inv_solve_DCT(imdl, deltaVolt, masked_lege, lambda);
+imgRec_cheb = inv_solve_DCT(imdl, deltaVolt, masked_cheb, lambda);
 
 
 %%
 % display the image
 figure(2)
 clf
-subplot(2,1,1)
-show_fem(my_imgRec);
+subplot(2,2,1)
+show_fem(imgRec);
 
-subplot(2,1,2)
-show_fem(my_imgRec);
+subplot(2,2,3)
+show_fem(imgRec_my_dct);
+
+subplot(2,2,2)
+show_fem(imgRec_lege);
+
+subplot(2,2,4)
+show_fem(imgRec_cheb);
 
 %% compare singular values
 % I am not sure about this part
@@ -90,15 +111,28 @@ J = calc_jacobian(imgRec_);
 
 S_J = svd(J); 
 S_dct = svd(J*spec_Mtx_col);
-S_val = svd(J*S); 
+S_my_dct = svd(J*masked_my_dct); 
+S_lege = svd(J*masked_lege); 
+S_cheb = svd(J*masked_cheb); 
 
 figure(3)
 clf
 hold on
 loglog(S_J./S_J(1))
 loglog(S_dct./S_dct(1))
-loglog(S_val./S_val(1))
+loglog(S_my_dct./S_my_dct(1))
+loglog(S_lege./S_lege(1))
+loglog(S_cheb./S_cheb(1))
 
 set(gca, 'xscale', 'lin',  'yscale', 'log')
 
-legend('J', 'dct', 'my dct')
+legend('J', 'dct', 'my dct', 'lege', 'cheb')
+
+
+%%
+cond(J)
+cond(J.*unstruct_maks')
+cond(J*spec_Mtx_col)
+cond(J*masked_my_dct)
+cond(J*masked_lege)
+cond(J*masked_cheb)
