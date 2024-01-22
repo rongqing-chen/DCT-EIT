@@ -1,14 +1,13 @@
-function [DCT_subset, ordered_coefficients] = make_DCT_subset(elem_centers, x_max_coeff, y_max_coeff)
+function [DCT_subset, coefficients_matrix] = make_DCT_subset(elem_centers, coefficients_matrix)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
-% order coefficients in zig zag way
-ordered_coefficients = order_coeffs_tensor_product(0:y_max_coeff-1, 0:y_max_coeff-1);
+x_max_coeff = max(coefficients_matrix(:,1));
+y_max_coeff = max(coefficients_matrix(:,2));
+DCT_subset = zeros(length(elem_centers), length(coefficients_matrix));
 
-DCT_subset = zeros(length(elem_centers), x_max_coeff*y_max_coeff);
-
-for idk = 1:length(ordered_coefficients)
-    a_jk = ordered_coefficients(idk,:);
+for idk = 1:length(coefficients_matrix)
+    a_jk = coefficients_matrix(idk,:);
     normalization = 2/(x_max_coeff*y_max_coeff);
     if a_jk(1) == 0
         normalization = normalization/sqrt(2);

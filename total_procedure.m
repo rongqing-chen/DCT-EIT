@@ -25,7 +25,14 @@ magic_values(3,:) = [120 , 256/2]; % stretch and shift
 M = 16;
 N = 16;
 
-[S, ordered_coefficients] = make_DCT_subset(new_centers, M, N);
+% % coefficients ordered in natural way
+% [MM, NN] = ndgrid(0:M-1, 0:N-1);
+% coefficients_matrix = [MM(:), NN(:)];
+
+% order coefficients in zig zag way
+coefficients_matrix = order_coeffs_tensor_product(0:M-1, 0:N-1);
+
+[S, ordered_coefficients] = make_DCT_subset(new_centers, coefficients_matrix);
 
 
 %% mask
