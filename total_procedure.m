@@ -17,7 +17,7 @@ load('dct_demonstration.mat')
 % scale and shift model
 magic_values(1,:) = [8, 38.72]; % orig_mins
 magic_values(2,:) = [248, 217.28]; % orig_maxs;
-magic_values(3,:) = [120 , 256/2]; % stretch and shift
+magic_values(3,:) = [120, 256/2]; % stretch and shift
 [fmdl_stretch, new_centers] = scale_model_dimension(fmdl, magic_values);
 
 %% my dct
