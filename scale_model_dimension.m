@@ -3,12 +3,12 @@ function [fmdlStretch, new_centers] = scale_model_dimension(fmdl, magic_values)
 %   Detailed explanation goes here
 
 % magic values
-orig_mins = [8, 38.72]; % magic_values(1,:);
-orig_maxs = [248, 217.28]; % magic_values(2,:);
+orig_mins = magic_values(1,:);
+orig_maxs = magic_values(2,:);
 
 % scale dimensions 
 fmdlStretch = fmdl;
-fmdlStretch.nodes = fmdl.nodes * 120 + 256/2; % fmdl.nodes * magic_values(3,1) + magic_values(3,2);
+fmdlStretch.nodes = fmdl.nodes * magic_values(3,1) + magic_values(3,2);
 
 % get position of fem elements
 elem_centers = interp_mesh(fmdlStretch, 0); % center of elements
