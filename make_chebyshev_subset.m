@@ -1,6 +1,8 @@
 function poly_subset = make_chebyshev_subset(elem_centers, coefficients_matrix)
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
+%poly_subset = make_chebyshev_subset(elem_centers, coefficients_matrix)
+% make a 2D rectangular chebyshev subset from the elem_centers (centers of
+% fem elements)
+% and the a coefficient matrix. 
 
 x_max_coeff = max(coefficients_matrix(:,1));
 y_max_coeff = max(coefficients_matrix(:,2));

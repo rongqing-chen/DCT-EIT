@@ -1,6 +1,7 @@
 function DCT_subset = make_DCT_subset(elem_centers, coefficients_matrix)
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
+%DCT_subset = make_DCT_subset(elem_centers, coefficients_matrix)
+% returns the 2D rectangular DCT_subset calculated on elem_centers from the
+% coefficients_matrix.
 
 x_max_coeff = max(coefficients_matrix(:,1));
 y_max_coeff = max(coefficients_matrix(:,2));

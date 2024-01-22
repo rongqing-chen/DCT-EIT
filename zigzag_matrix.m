@@ -1,6 +1,9 @@
 function [M] = zigzag_matrix(input_matrix)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%[M] = zigzag_matrix(input_matrix)
+% return the values of input_matrix in a zigzag order. It is useful for
+% having a more or less constant order traversing of the 2D coefficients of
+% a tensor product. 
+% Found on 
 % https://stackoverflow.com/questions/3024939/matrix-zigzag-reordering
 
 M = input_matrix;

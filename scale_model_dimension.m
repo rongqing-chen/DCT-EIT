@@ -1,17 +1,19 @@
-function [fmdl_stretch, new_centers] = scale_model_dimension(fmdl, magic_values)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+function [fmdl_stretched, new_centers] = scale_model_dimension(fmdl, magic_values)
+%[fmdl_stretched, new_centers] = scale_model_dimension(fmdl, magic_values)
+% resize the model fmdl according to some magic values. It returns the
+% stretched model fmdl_stretched and the new centers of the fem elements.
+
 
 % magic values
 orig_mins = magic_values(1,:);
 orig_maxs = magic_values(2,:);
 
 % scale dimensions 
-fmdl_stretch = fmdl;
-fmdl_stretch.nodes = fmdl.nodes * magic_values(3,1) + magic_values(3,2);
+fmdl_stretched = fmdl;
+fmdl_stretched.nodes = fmdl.nodes * magic_values(3,1) + magic_values(3,2);
 
 % get position of fem elements
-elem_centers = interp_mesh(fmdl_stretch, 0); % center of elements
+elem_centers = interp_mesh(fmdl_stretched, 0); % center of elements
 mins = min(elem_centers);
 maxs = max(elem_centers);
 

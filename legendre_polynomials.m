@@ -1,15 +1,7 @@
-function [basisSet, varargout] = legendre_polynomials(x, number_of_polynomials)
-% newer version where the number of coefficients/polynomials is passed
-% instead of the order
-% arguments
-%     L {mustBeInteger}
-%     number_of_polynomials {mustBeInteger}
-%     sflag  {mustBeMember(sflag,{'periodic','symmetric'})} = 'periodic'
-% end
-% 
-% if number_of_polynomials < 1
-%     error('number_of_polynomials must be higher than 1, but it was: %d', number_of_polynomials)
-% end
+function basis_set = legendre_polynomials(x, number_of_polynomials)
+%basis_set = legendre_polynomials(x, number_of_polynomials)
+% it returns the first number_of_polynomials basis_set of legendre 
+% polynomials calculated on x. x should be -1<=x<=1.
 
 order = number_of_polynomials-1;
 
@@ -27,17 +19,9 @@ else
     coeff = eye(order+1);
 end
 
-% %     x = -1:2/(L-1):1; % Legendre polynomials are supported for |x|<=1
-% if strcmp(sflag, 'periodic') 
-%     x = 2*((0:L-1)/L)-1;
-% elseif strcmp(sflag, 'symmetric')
-%     x = linspace(-1,1,L);
-% end
 x = x(:); % make it a column
 
-varargout{1} = x;
-
 % Evaluate the polynomials for every element in X
-basisSet = cumprod([ones(size(x)) x(:,ones(1,order))], 2) * coeff.';
+basis_set = cumprod([ones(size(x)) x(:,ones(1,order))], 2) * coeff.';
 % or D = cumprod([ones(m,1) repmat(X,[1 N])], 2) * coeff.';
 end

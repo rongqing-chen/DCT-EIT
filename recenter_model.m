@@ -1,6 +1,7 @@
 function [norm_centers] = recenter_model(fmdl)
-%UNTITLED7 Summary of this function goes here
-%   Detailed explanation goes here
+%[norm_centers] = recenter_model(fmdl)
+% calculate the norm_centers of the element of fmdl translated and shifted
+% between 0 and 1.
 
 % scale dimensions 
 fmdl_stretch = fmdl;

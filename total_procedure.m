@@ -1,5 +1,5 @@
 
-% init_eidors()
+init_eidors()
 clear
 % 
 load('dct_demonstration.mat')
