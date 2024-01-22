@@ -37,20 +37,23 @@ magic_values(3,:) = [120 , 256/2]; % stretch and shift
 M = 16;
 N = 16;
 
-
 [S, ordered_coefficients] = make_DCT_subset(new_centers, M, N);
 
 
 %% mask
-pts = interp_mesh(fmdl_stretch, 0);
 
-x = 0:255;
-y = x';
+unstruct_maks = make_unstructured_mask(fmdl_stretch, prior_l);
 
-mask_interp = griddedInterpolant({x,y}, prior_l, 'nearest');
-
-% dimensions need inversion
-unstruct_maks = mask_interp([pts(:,2), pts(:,1)]);
+% pts = interp_mesh(fmdl_stretch, 0);
+% 
+% [x_dim, y_dim] = size(prior_l);
+% x = 0:x_dim-1;
+% y = (0:y_dim-1)';
+% 
+% mask_interp = griddedInterpolant({x,y}, prior_l, 'nearest');
+% 
+% % dimensions need inversion
+% unstruct_maks = mask_interp([pts(:,2), pts(:,1)]);
 
 %
 masked_values = unstruct_maks.*S;
@@ -151,7 +154,12 @@ recCond = specMtxCol*dctCoeff;
 J_my_DCT = J * masked_values;
 R = eye(size(J_my_DCT,2));
 
-my_dctCoeff = (J_my_DCT'*J_my_DCT + lambda.^2*R)\(J_my_DCT'*deltaVolt);
+if size(J_my_DCT,2) > length(deltaVolt)    
+    my_dctCoeff = (J_my_DCT'*J_my_DCT + lambda.^2*R)\(J_my_DCT'*deltaVolt);
+else
+    lambda = lambda/10;
+    my_dctCoeff = (J_my_DCT'*J_my_DCT + lambda.^2*R)\(J_my_DCT'*deltaVolt);
+end
 
 %% my inverse DCT
 my_recCond = masked_values*my_dctCoeff;
