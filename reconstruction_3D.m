@@ -1,6 +1,8 @@
 % from 
 % https://www.sce.carleton.ca/faculty/adler/eidors/tutorial/EIDORS_basics/basic_3d.shtml
 
+close all
+
 % Basic 3d model $Id: basic_3d_01.m 2161 2010-04-04 20:33:46Z aadler $
 
 fmdl= ng_mk_cyl_models(3,[15,1,1.5,2],[0.1,0,0.05]); 
@@ -11,7 +13,9 @@ imdl.fwd_model = fmdl;
 imdl.fwd_model.stimulation = mk_stim_patterns(45,1,[0,3],[0,1],{},1);
 img1 = mk_image(imdl);
 
-show_fem(img1);
+figure(1)
+subplot(1,2,1)
+show_fem(img1); axis tight;
 
 % print_convert('basic_3d_01a.png','-density 60')
 
@@ -25,6 +29,8 @@ memb_frac = elem_select( img1.fwd_model, select_fcn);
 img2 = mk_image(img1, 1 + memb_frac );
 
 img2.calc_colours.cb_shrink_move = [0.3,0.6,0.02];
+
+subplot(1,2,2)
 show_fem(img2,1); axis tight;
 
 % print_convert('basic_3d_02a.png','-density 60');
@@ -32,15 +38,18 @@ show_fem(img2,1); axis tight;
 %%
 % Basic 3d model $Id: basic_3d_03.m 2161 2010-04-04 20:33:46Z aadler $
 
-clf
+
 % Show 3D object as slices
 img2.calc_colours.greylev = -0.05;
 img2.calc_colours.npoints = 128;
+
+figure(2)
+subplot(1,2,1)
 show_3d_slices(img2, [0.5,1.5,1.8,2.1]);
 view(-14,13); axis tight; axis equal; zlim([0,3]);
 
 % print_convert('basic_3d_03a.png','-density 60')
-
+subplot(1,2,2)
 show_3d_slices(img2, [1,1.9], [0.5],[0.5]);
 view(-14,13); axis tight; axis equal;
 
@@ -53,6 +62,7 @@ view(-14,13); axis tight; axis equal;
 vh= fwd_solve(img1);
 vi= fwd_solve(img2);
 
+figure(3)
 plot([vh.meas, vi.meas]);
 axis tight
 % print_convert('basic_3d_04a.png','-density 60',0.4);
@@ -75,9 +85,12 @@ imgr = inv_solve(imdl, vh, vi);
 imgr.calc_colours.ref_level = 0; % difference imaging
 imgr.calc_colours.greylev = -0.05;
 
+figure(4)
+subplot(1,2,1)
 show_fem(imgr);
 % print_convert('basic_3d_06a.png','-density 60');
 
+subplot(1,2,2)
 show_3d_slices(imgr, [1,1.9], [0.5],[0.5]);
 view(-14,13); axis tight; axis equal;
 % print_convert('basic_3d_06b.png','-density 60');
