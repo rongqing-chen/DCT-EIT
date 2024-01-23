@@ -5,7 +5,7 @@ close all
 
 % Basic 3d model $Id: basic_3d_01.m 2161 2010-04-04 20:33:46Z aadler $
 
-fmdl= ng_mk_cyl_models(3,[15,1,1.5,2],[0.1,0,0.05]); 
+fmdl= ng_mk_cyl_models([3,1,0.5],[15,1,1.5,2],[0.1,0,0.05]); % 5321 nodes
 show_fem(fmdl);
 
 imdl = mk_common_model('a2c2',8); % Will replace most fields
@@ -24,7 +24,7 @@ show_fem(img1); axis tight;
 
 % Add a circular object at 0.2, 0.5
 % Calculate element membership in object
-select_fcn = inline('(x-0.2).^2 + (y-0.5).^2 + (z-2).^2 < 0.3^2','x','y','z');
+select_fcn = inline('(x-0.2).^2 + (y-0.5).^2 + (z-1.5).^2 < 0.3^2','x','y','z');
 memb_frac = elem_select( img1.fwd_model, select_fcn);
 img2 = mk_image(img1, 1 + memb_frac );
 
