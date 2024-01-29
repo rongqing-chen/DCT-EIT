@@ -1,20 +1,23 @@
 function poly_subset = make_chebyshev_subset(elem_centers, coefficients_matrix)
 %poly_subset = make_chebyshev_subset(elem_centers, coefficients_matrix)
-% make a 2D rectangular chebyshev subset from the elem_centers (centers of
+% make a nD rectangular chebyshev subset from the elem_centers (centers of
 % fem elements)
 % and the a coefficient matrix. 
 
-x_max_coeff = max(coefficients_matrix(:,1));
-y_max_coeff = max(coefficients_matrix(:,2));
-poly_subset = zeros(length(elem_centers), length(coefficients_matrix));
+max_coeffs = max(coefficients_matrix, [],1);
 
-bx =  chebyshev_polynomials(elem_centers(:,1), x_max_coeff+1);
-by =  chebyshev_polynomials(elem_centers(:,2), y_max_coeff+1);
+[combinations_of_coeffs, number_of_dimensions] = size(coefficients_matrix);
+single_dim_subsets = cell(number_of_dimensions,1);
+poly_subset = ones(length(elem_centers), combinations_of_coeffs);
 
+for idm = 1:number_of_dimensions
+    single_dim_subsets{idm} = chebyshev_polynomials(elem_centers(:,idm), max_coeffs(idm));
+end
 
-for idk = 1:length(coefficients_matrix)
-    a_jk = coefficients_matrix(idk,:);
-    poly_subset(:,idk) = bx(:,a_jk(1)+1).*by(:,a_jk(2)+1);
+for idk = 1:combinations_of_coeffs
+    for idm = 1:number_of_dimensions
+        poly_subset(:,idk) = poly_subset(:,idk).*single_dim_subsets{idm}(:,coefficients_matrix(idk,idm));
+    end
 end
 
 end
