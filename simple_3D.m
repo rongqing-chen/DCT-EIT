@@ -40,7 +40,7 @@ imdl_rec.fwd_model.stimulation = stim_pattern;
 img_rec = mk_image(imdl_rec);
 
 
-%%
+%% subset jacobian
 J = calc_jacobian(img_rec);
 % elem_centers = (recenter_model(fmdl_rec).*[pi,2,2])-[0,1,1];
 elem_centers = (recenter_model(fmdl_rec).*[pi,pi,pi])-[0,0,0];
