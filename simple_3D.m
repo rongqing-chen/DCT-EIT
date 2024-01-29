@@ -1,4 +1,5 @@
-
+clear
+init_eidors()
 
 extra={'ball','solid ball = sphere(0,0.2,1.2;0.5);'};
 fmdl = ng_mk_cyl_models([3,1,0.2],[16,1.5],[0.1,0,0.05], extra); % 2994 nodes
@@ -41,18 +42,22 @@ img_rec = mk_image(imdl_rec);
 
 %%
 J = calc_jacobian(img_rec);
-elem_centers = recenter_model(fmdl_rec)*pi;
+% elem_centers = (recenter_model(fmdl_rec).*[pi,2,2])-[0,1,1];
+elem_centers = (recenter_model(fmdl_rec).*[pi,pi,pi])-[0,0,0];
 
 dva = calc_difference_data( vh, vi, fmdl_rec);
 
-M = 10;
-N = 10;
-O = 4;
+M = 5;
+N = 5;
+O = 2;
 
 % coefficients ordered in row, by col, by depth
 [MM, NN, OO] = ndgrid(0:M-1, 0:N-1, 0:O-1);
 coefficients_matrix = [MM(:), NN(:), OO(:)];
 
+subset_makers = {@make_DCT_subset, @make_DCT_subset, @make_DCT_subset};
+
+subset = make_subset_3D(elem_centers, coefficients_matrix, subset_makers);
 DCT_subset = make_DCT_subset(elem_centers, coefficients_matrix);
 
 J_DCT = J* DCT_subset;

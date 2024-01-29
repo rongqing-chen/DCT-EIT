@@ -7,16 +7,15 @@ max_coeffs = max(coefficients_matrix);
 
 DCT_subset = zeros(length(elem_centers), length(coefficients_matrix));
 
-normalization_ = 2/(prod(max_coeffs));
+normalization_ = sqrt(2).^length(max_coeffs)/prod(max_coeffs);
 
 for idk = 1:length(coefficients_matrix)
     a_jk = coefficients_matrix(idk,:);
     
-    zero_freqs = sum(a_jk == 1);
+    zero_freqs = sum(a_jk == 0);
     % each zero freq gets a 1/sqrt(2)
     normalization = normalization_/(sqrt(2).^zero_freqs); 
     DCT_subset(:,idk) = normalization*prod(cos(elem_centers.*a_jk),2);
-%     DCT_subset(:,idk) = normalization*cos(a_jk(1)*elem_centers(:,1)).*cos(a_jk(2)*elem_centers(:,2));
 end
 
 end
