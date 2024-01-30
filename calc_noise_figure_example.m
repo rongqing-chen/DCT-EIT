@@ -1,46 +1,20 @@
-% %% This is a demonstration of the NF calculation 
-% 
-% extra={'ball','solid ball = sphere(0,0.2,1.2;0.5);'};
-% fmdl = ng_mk_cyl_models([3,1,0.2],[16,1.5],[0.1,0,0.05], extra); % 2994 nodes
-% imdl = mk_common_model('a2c2',8); % Will replace most fields
-% imdl.fwd_model = fmdl;
-% stim_pattern = mk_stim_patterns(16,1,[0,3],[0,1],{},1);
-% imdl.fwd_model.stimulation = stim_pattern;
-% 
-% img = mk_image(imdl);
-% vh = fwd_solve(img);
-% 
-% img_extra = img;
-% img_extra.elem_data(fmdl.mat_idx{2}) = 0.1;
-% 
-% vi = fwd_solve(img_extra);
-% %%
-% 
-% add 25% noise to the data
-vi_noise = vi;
-noise_ampl = 0.1;
-noise = std(vi.meas - vh.meas)*noise_ampl;
-vi_noise.meas = vi.meas + noise_ampl * randn(size(vi.meas));
 
-% calc voltage difference
-delta_volt = calc_difference_data(vh, vi, imdl.fwd_model);
-delta_volt_noise = calc_difference_data(vh, vi_noise, imdl.fwd_model);
+noise_ampl = 0.01;
 
-system_noise = delta_volt - delta_volt_noise;
-% 
-% %%
-% img_rec = mk_image(imdl_rec);
-% 
-% 
-% %% subset jacobian
-% J = calc_jacobian(img_rec);
 
 %% This part you can define your own range of your hyperparameter
-hypervalues = logspace(-3,-1,30);
+% hypervalues = logspace(-3,-1,20);
+h1 = 1e-3;
+h2 = 1e-1;
+n_points = 20;
+[hypervalues, x_lin] = log_lobato_points(h1, h2, n_points);
+
 
 imgRec.calc_colours.ref_level =  0;
 
-numb_averages = 10;
+target_noise_figure = 0.5;
+
+numb_averages = 2;
 NF_DCT = zeros(length(hypervalues), numb_averages);
 
 
@@ -69,15 +43,43 @@ for j = 1:length(hypervalues)
     end
 end
 
-figure(10)
-semilogx(hypervalues, mean(NF_DCT,2))
+%%
 
-%% how to use the function in EIDORS
-% imdl.hyperparameter.func = @choose_noise_figure;
-% imdl.hyperparameter.noise_figure = 0.5;
-% % very tricky here, you need to assign a vector of element numbers of
-% % contrast in centre as a simulation target
-% imdl.hyperparameter.tgt_elems = [2037,2038];
-% choose_noise_figure(imdl); %calc_noise_figure is called by choose_noise_figure
+curve = mean(NF_DCT,2) - target_noise_figure;
+
+P = polyfit(x_lin, curve, 7);
+
+x_logscale = logspace(log10(h1), log10(h2), 5*n_points);
+x_lin_ext = linspace(-1, 1, 5*length(hypervalues));
+y = polyval(P, x_lin_ext);
+
+% 
+lin_roots = roots(P);
+l = find((abs(imag(lin_roots))<1e-15) & (abs(real(lin_roots)) < 1));
+right_root = real(lin_roots(l));
+
+a = log10(h1);
+b = log10(h2);
+
+lambda_0 = 10.^(0.5*(a+b) + 0.5*(b-a)*right_root);
+
+if length(lambda_0) > 1
+    disp('!!more than a solution!!')
+else
+    disp('OK')
+end
+
+%
+figure(10)
+clf
+hold on
+plot(hypervalues, curve + target_noise_figure)
+plot(x_logscale, y + target_noise_figure)
+plot(lambda_0, target_noise_figure*ones(size(lambda_0)), 'o')
+
+set(gca, 'xscale', 'log')
+
+
+
 
 
