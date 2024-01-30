@@ -49,24 +49,27 @@ elem_centers = interp_mesh(fmdl_rec, 0); % center of elements
 new_mins = pi/(2*length(elem_centers)).*ones(1,3);
 new_maxs = pi*(1-1/(2*length(elem_centers))).*ones(1,3);
 
-new_mins = -1.*ones(1,3);
-new_maxs = +1.*ones(1,3);
+% new_mins = -1.*ones(1,3);
+% new_maxs = +1.*ones(1,3);
 [new_elem_centers] = shift_elem_centers(elem_centers, new_mins, new_maxs);
 
-dva = calc_difference_data( vh, vi, fmdl_rec);
+delta_volt = calc_difference_data( vh, vi, fmdl_rec);
 
-M = 5;
-N = 5;
-O = 2;
+M = 10;
+N = 10;
+O = 4;
 
 % coefficients ordered in row, by col, by depth
 [MM, NN, OO] = ndgrid(1:M, 1:N, 1:O);
 coefficients_matrix = [MM(:), NN(:), OO(:)];
 
-subset_makers = {@make_chebyshev_subset, @make_chebyshev_subset, @make_chebyshev_subset};
+subset_makers = {@make_DCT_subset, @make_DCT_subset, @make_DCT_subset};
 
-subset = make_subset_3D(elem_centers, coefficients_matrix, subset_makers);
-DCT_subset = make_DCT_subset(elem_centers, coefficients_matrix);
+subset = make_subset_3D(new_elem_centers, coefficients_matrix, subset_makers);
+DCT_subset = make_DCT_subset(new_elem_centers, coefficients_matrix);
+
+
+subset_ = complete_subset_gen(elem_centers, [M,N,O], {'dct', 'dct', 'dct'});
 
 J_subset = J* subset;
 J_DCT = J* DCT_subset;
@@ -74,9 +77,9 @@ J_DCT = J* DCT_subset;
 
 R = eye(size(J_subset,2));
 %%
-lambda = 5e-3; %1e-4 with noise, 1e-6 or less without noise 
+lambda = 6e-3; %1e-4 with noise, 1e-6 or less without noise 
 disp(lambda)
-dctCoeff = (J_subset'*J_subset + lambda.^2*R)\(J_subset'*dva);
+dctCoeff = (J_subset'*J_subset + lambda.^2*R)\(J_subset'*delta_volt);
 
 %% inverse DCT
 reconstructed_elem = subset*dctCoeff;
