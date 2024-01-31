@@ -1,12 +1,11 @@
-%% This part you can define your own range of your hyperparameter
+%% Show that the noise_figures are normally distributed
 close all
 hypervalues = logspace(-3,-1,6);
 
-imgRec.calc_colours.ref_level =  0;
-
 numb_averages = 500;
-NF_DCT = zeros(length(hypervalues), numb_averages);
+noise_figures = zeros(length(hypervalues), numb_averages);
 
+vi_noise = vi;
 
 %% calculating the noise figure
 for j = 1:length(hypervalues)
@@ -19,8 +18,7 @@ for j = 1:length(hypervalues)
         delta_volt_noise = calc_difference_data(vh, vi_noise, imdl.fwd_model);
         
         system_noise = delta_volt - delta_volt_noise;
-    
-    
+     
         J_DCT = J* DCT_subset;
     
         lambda = hypervalues(j);
@@ -28,7 +26,7 @@ for j = 1:length(hypervalues)
         [noise_figure, reconstructed_elem] = calc_noise_figure(delta_volt, system_noise, J_DCT, DCT_subset, lambda);
 
     
-        NF_DCT(j,ii) =  noise_figure;
+        noise_figures(j,ii) =  noise_figure;
         
     end
 end
@@ -39,9 +37,9 @@ clf
 tiledlayout('flow')
 for j = 1:length(hypervalues)
     nexttile
-    histogram(NF_DCT(j,:),30,'Normalization','pdf')
-    mu = mean(NF_DCT(j,:));
-    sigma = std(NF_DCT(j,:));
+    histogram(noise_figures(j,:),30,'Normalization','pdf')
+    mu = mean(noise_figures(j,:));
+    sigma = std(noise_figures(j,:));
     y = linspace(mu-3*sigma,mu+3*sigma, 200);
     f = exp(-(y-mu).^2./(2*sigma^2))./(sigma*sqrt(2*pi));
     

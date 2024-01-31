@@ -1,85 +1,48 @@
 
-noise_ampl = 0.01;
-
-
-%% This part you can define your own range of your hyperparameter
-% hypervalues = logspace(-3,-1,20);
-h1 = 1e-3;
-h2 = 1e-1;
-n_points = 20;
-[hypervalues, x_lin] = log_lobato_points(h1, h2, n_points);
-
-
-imgRec.calc_colours.ref_level =  0;
+parameters.noise_amplitude = 0.01;
+parameters.lambda_low = 1e-3;
+parameters.lambda_high = 1e-1;
+parameters.lambda_points = 20;
+parameters.n_average = 2;
+parameters.make_plot = true;
 
 target_noise_figure = 0.5;
+eidors_img = img_rec;
+subset = DCT_subset;
 
-numb_averages = 2;
-NF_DCT = zeros(length(hypervalues), numb_averages);
-
-
-%% calculating the noise figure
-for j = 1:length(hypervalues)
-    for ii = 1:numb_averages
-        noise = std(vi.meas - vh.meas)*noise_ampl;
-        vi_noise.meas = vi.meas + noise * randn(size(vi.meas));
-        
-        % calc voltage difference
-        delta_volt = calc_difference_data(vh, vi, imdl.fwd_model);
-        delta_volt_noise = calc_difference_data(vh, vi_noise, imdl.fwd_model);
-        
-        system_noise = delta_volt - delta_volt_noise;
-    
-    
-        J_DCT = J* DCT_subset;
-    
-        lambda = hypervalues(j);
-        
-        [noise_figure, reconstructed_elem] = calc_noise_figure(delta_volt, system_noise, J_DCT, DCT_subset, lambda);
-
-    
-        NF_DCT(j,ii) =  noise_figure;
-        
+unsuccessful_times = 0;
+lambdas = [];
+runs = 0;
+repetitions = 1000;
+for ii = 1:repetitions
+    [lambda_0, non_single_solution_flag] = lambda_optimization(vh, vi, target_noise_figure, eidors_img, subset, parameters);
+    if non_single_solution_flag
+        unsuccessful_times = unsuccessful_times+1;
+    else
+        runs = runs +1;
+        lambdas(runs) = lambda_0;
     end
 end
 
 %%
+fprintf('The procedure was unsuccessful %.1f percent of the times\n', unsuccessful_times/repetitions*100)
+mean_lambdas = mean(lambdas);
+std_lambdas = std(lambdas);
 
-curve = mean(NF_DCT,2) - target_noise_figure;
+fprintf('Optimal lambda = %.3e +- %.3e \n', mean_lambdas, 2*std_lambdas)
 
-P = polyfit(x_lin, curve, 7);
+y = linspace(mean_lambdas-3*std_lambdas, mean_lambdas+3*std_lambdas, 200);
+f = exp(-(y-mean_lambdas).^2./(2*std_lambdas^2))./(std_lambdas*sqrt(2*pi));
 
-x_logscale = logspace(log10(h1), log10(h2), 5*n_points);
-x_lin_ext = linspace(-1, 1, 5*length(hypervalues));
-y = polyval(P, x_lin_ext);
-
-% 
-lin_roots = roots(P);
-l = find((abs(imag(lin_roots))<1e-15) & (abs(real(lin_roots)) < 1));
-right_root = real(lin_roots(l));
-
-a = log10(h1);
-b = log10(h2);
-
-lambda_0 = 10.^(0.5*(a+b) + 0.5*(b-a)*right_root);
-
-if length(lambda_0) > 1
-    disp('!!more than a solution!!')
-else
-    disp('OK')
-end
-
-%
 figure(10)
 clf
+histogram(lambdas, max(round(repetitions/20),5), 'Normalization', 'pdf')
 hold on
-plot(hypervalues, curve + target_noise_figure)
-plot(x_logscale, y + target_noise_figure)
-plot(lambda_0, target_noise_figure*ones(size(lambda_0)), 'o')
+plot(y,f,'LineWidth',1.5)
 
-set(gca, 'xscale', 'log')
+xlabel('Optimal Lambda')
+ylabel('Probability Density')
 
-
-
-
-
+% The procedure was unsuccessful 1.2 percent of the times
+% Optimal lambda = 5.497e-03 +- 1.081e-03 
+% lambda distribution is asymmetric
