@@ -1,9 +1,9 @@
 clear
 init_eidors()
-target.center = [0, 0.2, 1.2];
+target.center = [0, 0.2, 1.5];
 target.radius = 0.35;
 extra={'ball',sprintf('solid ball = sphere(%f,%f,%f; %f);', target.center, target.radius )};
-fmdl = ng_mk_cyl_models([3,1,0.2],[16,1.5],[0.1,0,0.05], extra); % 2994 nodes
+fmdl = ng_mk_cyl_models([3,1,0.2],[16,1.5],[0.1,0,0.05], extra); % 3148 nodes
 imdl = mk_common_model('a2c2',8); % Will replace most fields
 imdl.fwd_model = fmdl;
 stim_pattern = mk_stim_patterns(16,1,[0,3],[0,1],{},1);
@@ -44,40 +44,24 @@ img_rec = mk_image(imdl_rec);
 %% subset jacobian
 J = calc_jacobian(img_rec);
 
-
 elem_centers = interp_mesh(img_rec.fwd_model, 0); % center of elements
 
-new_mins = pi/(2*length(elem_centers)).*ones(1,3);
-new_maxs = pi*(1-1/(2*length(elem_centers))).*ones(1,3);
-
-% new_mins = -1.*ones(1,3);
-% new_maxs = +1.*ones(1,3);
-[new_elem_centers] = shift_elem_centers(elem_centers, new_mins, new_maxs);
-
-delta_volt = calc_difference_data( vh, vi, img_rec.fwd_model);
-
-M = 6;
-N = 6;
-O = 3;
+M = 4;
+N = 1;
+O = 1;
 
 % coefficients ordered in row, by col, by depth
 [MM, NN, OO] = ndgrid(1:M, 1:N, 1:O);
 coefficients_matrix = [MM(:), NN(:), OO(:)];
 
-% subset_makers = {@make_DCT_subset, @make_DCT_subset, @make_DCT_subset};
-% 
-% % subset = make_subset_3D(new_elem_centers, coefficients_matrix, subset_makers);
-% subset = make_DCT_subset(new_elem_centers, coefficients_matrix);
-
-
-subset = complete_subset_gen(elem_centers, [M,N,O], {'dct', 'dct', 'poly'});
+[new_elem_centers, subset] = complete_subset_gen(elem_centers, [M,N,O], {'cyl', 'dct', 'poly'});
 
 
 %%
 target_noise_figure = 0.5;
 parameters.make_plot = true;
 parameters.lambda_low = 1e-3;
-parameters.lambda_high = 1e1;
+parameters.lambda_high = 1e3;
 
 [lambda, logging] = lambda_optimization(vh, vi, target_noise_figure, img_rec, subset, parameters);
 disp(lambda)
@@ -86,9 +70,11 @@ lambda = min(lambda);
 %%
 J_subset = J* subset;
 R = eye(size(J_subset,2));
+delta_volt = calc_difference_data( vh, vi, img_rec.fwd_model);
+
 reconstruction_coeffs = (J_subset'*J_subset + lambda.^2*R)\(J_subset'*delta_volt);
 
-%% inverse DCT
+%% inverse 
 reconstructed_elem = subset*reconstruction_coeffs;
 
 img_final = mk_image(imdl_rec);
