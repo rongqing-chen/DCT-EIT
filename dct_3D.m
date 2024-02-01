@@ -24,7 +24,7 @@ N = 12;
 O = 12;
 
 % coefficients ordered in row, by col, by depth
-[MM, NN, OO] = ndgrid(0:M-1, 0:N-1, 0:O-1);
+[MM, NN, OO] = ndgrid(1:M, 1:N, 1:O);
 coefficients_matrix = [MM(:), NN(:), OO(:)];
 
 DCT_subset = make_DCT_subset(elem_centers, coefficients_matrix);

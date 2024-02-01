@@ -1,6 +1,7 @@
 % from 
 % https://www.sce.carleton.ca/faculty/adler/eidors/tutorial/EIDORS_basics/basic_3d.shtml
 
+init_eidors()
 close all
 
 % Basic 3d model $Id: basic_3d_01.m 2161 2010-04-04 20:33:46Z aadler $
