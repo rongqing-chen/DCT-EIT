@@ -1,5 +1,5 @@
 clear
-init_eidors()
+% init_eidors()
 target.center = [0, 0.2, 1.5];
 target.radius = 0.35;
 extra={'ball',sprintf('solid ball = sphere(%f,%f,%f; %f);', target.center, target.radius )};
