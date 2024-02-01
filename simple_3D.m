@@ -46,9 +46,9 @@ J = calc_jacobian(img_rec);
 
 elem_centers = interp_mesh(img_rec.fwd_model, 0); % center of elements
 
-M = 4;
-N = 1;
-O = 1;
+M = 2;
+N = 7;
+O = 3;
 
 % coefficients ordered in row, by col, by depth
 [MM, NN, OO] = ndgrid(1:M, 1:N, 1:O);
