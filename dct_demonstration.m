@@ -16,24 +16,19 @@
 % Date: 13-Oct-2021
 %
 % Script overview: This is a demonstration on how to use DCT-based EIT
-% algorithm. 
+% algorithm. EIDORS tool bos should be set up before using this code.
 
-% Set up EIDORS tool (run path_to/eidors-vx.yy/eidors/startup.m)
-init_eidors()
-
-% 
 load('dct_demonstration.mat')
 
 % calculating the DCT subset with frequencies combination, which is the size to
 % the prior
 [dct_p, dct_q] = create_dct_subset(size(prior_l,1),size(prior_l,2));
 
-
 % calculating the T mapping
 specMtxCol = cal_mapping(dct_p, dct_q, fmdl, prior_l);
 
 % check if the columns of specMtxCol are linearly independent
-A = rref(specMtxCol); % not sure this is correct?!?
+A = rref(specMtxCol);
 s = sum(diag(A));
 n = size(A,2);
 
@@ -47,5 +42,4 @@ end
 imgRec = inv_solve_DCT(imdl, deltaVolt, specMtxCol, lambda);
 
 % display the image
-figure(1)
 show_fem(imgRec);

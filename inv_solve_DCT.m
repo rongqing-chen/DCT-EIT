@@ -38,7 +38,12 @@ R = eye(p);
 dctCoeff = (J_DCT'*J_DCT + lambda.^2*R)\(J_DCT'*deltaVolt);
 
 %% inverse DCT
-recCond = specMtxCol*dctCoeff;
+
+recCond = zeros(size(imgRec.elem_data));
+
+for i=1:numel(dctCoeff)
+    recCond = recCond + specMtxCol(:,i) .* dctCoeff(i);
+end
 
 %% assigning element values
 

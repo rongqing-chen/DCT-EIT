@@ -28,7 +28,6 @@ y_range = 0:Y_Pix - 1;
 
 [pp,qq] = meshgrid(x_range, y_range);
 
-% MD DCT II
 dct_p = sqrt(2 / X_Pix) * cos(pi * (2*pp + 1) .* qq / (2 * X_Pix));
 dct_p(1,:) = dct_p(1,:) / sqrt(2);
 
